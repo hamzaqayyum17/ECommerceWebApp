@@ -1,25 +1,44 @@
-using ECommerceApp.Models;
+using ECommerceApp.Services;
 using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
 
 namespace ECommerceApp.Controllers
 {
     public class HomeController : Controller
     {
-        public IActionResult Index()
+        private readonly ProductService _productService;
+        private readonly CategoryService _categoryService;
+
+        public HomeController(ProductService productService,
+                              CategoryService categoryService)
         {
-            return View();
+            _productService = productService;
+            _categoryService = categoryService;
         }
 
-        public IActionResult Privacy()
+        // Home page — saare products
+        public IActionResult Index(string? search, int? categoryId)
         {
-            return View();
+            var products = string.IsNullOrEmpty(search)
+                ? _productService.GetAll()
+                : _productService.Search(search);
+
+            if (categoryId.HasValue && categoryId > 0)
+                products = products
+                    .Where(p => p.CategoryId == categoryId)
+                    .ToList();
+
+            ViewBag.Categories = _categoryService.GetAll();
+            ViewBag.Search = search;
+            ViewBag.CategoryId = categoryId;
+            return View(products);
         }
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
+        // Product detail page
+        public IActionResult Detail(int id)
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            var product = _productService.GetById(id);
+            if (product == null) return NotFound();
+            return View(product);
         }
     }
 }

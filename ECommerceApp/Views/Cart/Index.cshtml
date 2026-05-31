@@ -1,0 +1,103 @@
+﻿@model List<ECommerceApp.Models.CartItem>
+
+<div class="container mt-4">
+  <h3>My Cart</h3>
+
+  @if (!Model.Any())
+  {
+    <div class="alert alert-info">
+      Cart is empty. 
+      <a asp-controller="Home" asp-action="Index">Continue shopping</a>
+    </div>
+  }
+  else
+  {
+    <table class="table table-bordered align-middle">
+      <thead class="table-dark">
+        <tr>
+          <th>Product</th>
+          <th>Price</th>
+          <th>Quantity</th>
+          <th>Subtotal</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="cartBody">
+        @foreach (var item in Model)
+        {
+          <tr id="row-@item.CartId">
+            <td>
+              <img src="@item.ImageUrl" width="50" height="50"
+                   style="object-fit:cover" class="me-2"/>
+              @item.Name
+            </td>
+            <td>Rs. @item.Price</td>
+            <td>
+              <input type="number" value="@item.Quantity" min="1"
+                     class="form-control qty-input" style="width:80px"
+                     data-cartid="@item.CartId"/>
+            </td>
+            <td id="sub-@item.CartId">Rs. @item.SubTotal</td>
+            <td>
+              <button class="btn btn-danger btn-sm remove-btn"
+                      data-cartid="@item.CartId">Remove</button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+
+    <div class="text-end">
+      <h5>Total: Rs. <span id="cartTotal">@ViewBag.Total</span></h5>
+      <a asp-controller="Order" asp-action="Checkout"
+         class="btn btn-success btn-lg">Proceed to Checkout</a>
+    </div>
+  }
+</div>
+
+@section Scripts {
+<script>
+  // Quantity change — AJAX update
+  document.querySelectorAll('.qty-input').forEach(input => {
+    input.addEventListener('change', function () {
+      const cartId  = this.dataset.cartid;
+      const qty     = this.value;
+
+      fetch('/Cart/UpdateQuantity', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ cartId: cartId, quantity: qty })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          document.getElementById('cartTotal').textContent = data.total;
+          document.getElementById('cartBadge').textContent = data.cartCount;
+        }
+      });
+    });
+  });
+
+  // Remove item — AJAX
+  document.querySelectorAll('.remove-btn').forEach(btn => {
+    btn.addEventListener('click', function () {
+      const cartId = this.dataset.cartid;
+
+      fetch('/Cart/RemoveFromCart', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ cartId: cartId })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          // Row remove karo
+          document.getElementById('row-' + cartId).remove();
+          document.getElementById('cartTotal').textContent = data.total;
+          document.getElementById('cartBadge').textContent = data.cartCount;
+        }
+      });
+    });
+  });
+</script>
+}

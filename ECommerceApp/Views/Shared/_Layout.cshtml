@@ -11,40 +11,138 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark border-bottom box-shadow mb-3">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">ECommerceApp</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+
+                <!-- Brand -->
+                <a class="navbar-brand fw-bold"
+                       asp-controller="Home" asp-action="Index">
+                    🛒 ECommerceApp
+                </a>
+
+                <!-- Mobile toggle button -->
+                <button class="navbar-toggler" type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target=".navbar-collapse"
+                        aria-controls="navbarSupportedContent"
+                        aria-expanded="false"
+                        aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
+
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+
+                    <!-- Left side links -->
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link text-white"
+                                   asp-controller="Home" asp-action="Index">
+                                Home
+                            </a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
+
+                        @* Sirf Admin ko Admin Panel link dikhe *@
+                        @if (Context.Session.GetString("Role") == "Admin")
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-warning"
+                                       asp-controller="Admin" asp-action="Index">
+                                    ⚙️ Admin Panel
+                                </a>
+                            </li>
+                        }
+                    </ul>
+
+                    <!-- Right side links -->
+                    <ul class="navbar-nav">
+
+                        @if (Context.Session.GetInt32("UserId") != null)
+                        {
+                            @* Logged in user *@
+
+                            @* Cart button — sirf customer ko dikhe *@
+                            @if (Context.Session.GetString("Role") == "Customer")
+                            {
+                                <li class="nav-item me-2">
+                                    <a asp-controller="Cart" asp-action="Index"
+                                           class="btn btn-outline-light btn-sm mt-1">
+                                        🛍️ Cart
+                                        <span id="cartBadge"
+                                              class="badge bg-danger">0</span>
+                                    </a>
+                                </li>
+                            }
+
+                            @* Username show karo *@
+                            <li class="nav-item me-2">
+                                <span class="nav-link text-white">
+                                    👤 @Context.Session.GetString("UserName")
+                                </span>
+                            </li>
+
+                            @* Logout *@
+                            <li class="nav-item">
+                                <a asp-controller="Account" asp-action="Logout"
+                                       class="btn btn-outline-danger btn-sm mt-1">
+                                    Logout
+                                </a>
+                            </li>
+                        }
+                        else
+                        {
+                            @* Guest user *@
+                            <li class="nav-item me-2">
+                                <a asp-controller="Account" asp-action="Login"
+                                       class="btn btn-outline-light btn-sm mt-1">
+                                    Login
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a asp-controller="Account" asp-action="Register"
+                                       class="btn btn-primary btn-sm mt-1">
+                                    Register
+                                </a>
+                            </li>
+                        }
+
                     </ul>
                 </div>
             </div>
         </nav>
     </header>
+
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - ECommerceApp - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+    <footer class="border-top footer text-muted mt-4">
+        <div class="container py-2">
+            &copy; 2026 - ECommerceApp
         </div>
     </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+
+    @* Cart count load on page load *@
+    @if (Context.Session.GetString("Role") == "Customer" &&
+         Context.Session.GetInt32("UserId") != null)
+    {
+        <script>
+                // Page load par cart count fetch karo
+                fetch('/Cart/GetCartCount')
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.count > 0)
+                            document.getElementById('cartBadge')
+                                    .textContent = data.count;
+                    });
+        </script>
+    }
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
