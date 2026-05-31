@@ -1,0 +1,80 @@
+﻿@model List<ECommerceApp.Models.CartItem>
+
+<div class="container mt-4">
+    <div class="row">
+
+        <!-- Order Summary -->
+        <div class="col-md-7">
+            <h4>Order Summary</h4>
+            <table class="table table-bordered">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Product</th>
+                        <th>Qty</th>
+                        <th>Price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                <img src="@item.ImageUrl" width="40" height="40"
+                                     style="object-fit:cover" class="me-2" />
+                                @item.Name
+                            </td>
+                            <td>@item.Quantity</td>
+                            <td>Rs. @item.SubTotal</td>
+                        </tr>
+                    }
+                </tbody>
+                <tfoot>
+                    <tr class="table-success">
+                        <th colspan="2">Total</th>
+                        <th>Rs. @ViewBag.Total</th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        <!-- COD Payment Section -->
+        <div class="col-md-5">
+            <div class="card shadow p-4">
+                <h4>Payment Method</h4>
+                <hr />
+
+                <!-- COD Option -->
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="radio"
+                           checked disabled />
+                    <label class="form-check-label fw-bold fs-5">
+                        💵 Cash on Delivery
+                    </label>
+                </div>
+                <p class="text-muted small">
+                    Payment will be collected at the time of delivery.
+                </p>
+
+                <hr />
+                <h5>
+                    Total:
+                    <span class="text-success">Rs. @ViewBag.Total</span>
+                </h5>
+
+                <!-- COD Place Order Form -->
+                <form asp-action="PlaceOrder" method="post">
+                    <button type="submit"
+                            class="btn btn-success btn-lg w-100 mt-3">
+                        ✅ Place Order
+                    </button>
+                </form>
+
+                <a asp-controller="Cart" asp-action="Index"
+                       class="btn btn-outline-secondary w-100 mt-2">
+                    ← Back to Cart
+                </a>
+            </div>
+        </div>
+
+    </div>
+</div>

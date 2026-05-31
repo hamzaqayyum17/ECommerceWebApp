@@ -1,0 +1,52 @@
+﻿@model ECommerceApp.Models.Order
+
+<div class="container mt-4">
+    <div class="text-center mb-4">
+        <h2 class="text-success">✅ Order Placed Successfully!</h2>
+        <p class="text-muted">Order #@Model.OrderId — @Model.OrderDate.ToString("dd MMM yyyy")</p>
+    </div>
+
+    <div class="card shadow">
+        <div class="card-body">
+            <h5>Order Items</h5>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Qty</th>
+                        <th>Price</th>
+                        <th>Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Items)
+                    {
+                        <tr>
+                            <td>
+                                <img src="@item.ImageUrl" width="40" height="40"
+                                     style="object-fit:cover" class="me-2" />
+                                @item.Name
+                            </td>
+                            <td>@item.Quantity</td>
+                            <td>Rs. @item.UnitPrice</td>
+                            <td>Rs. @item.SubTotal</td>
+                        </tr>
+                    }
+                </tbody>
+                <tfoot>
+                    <tr class="table-success">
+                        <th colspan="3">Total</th>
+                        <th>Rs. @Model.TotalAmount</th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+
+    <div class="text-center mt-4">
+        <a asp-controller="Order" asp-action="MyOrders"
+           class="btn btn-primary me-2">My Orders</a>
+        <a asp-controller="Home" asp-action="Index"
+           class="btn btn-outline-secondary">Continue Shopping</a>
+    </div>
+</div>

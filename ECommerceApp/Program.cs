@@ -1,5 +1,6 @@
 using ECommerceApp.DataAccess;
 using ECommerceApp.Services;
+using Stripe;
 namespace ECommerceApp
 {
     public class Program
@@ -7,7 +8,8 @@ namespace ECommerceApp
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-
+            StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
+            
             // Add services to the container.
             builder.Services.AddControllersWithViews();
             builder.Services.AddScoped<DbAccess>();
@@ -16,6 +18,7 @@ namespace ECommerceApp
             builder.Services.AddScoped<ProductService>();
             builder.Services.AddScoped<ImageService>();
             builder.Services.AddScoped<CartService>();
+            builder.Services.AddScoped<OrderService>();
             builder.Services.AddSession(options => {
                 options.IdleTimeout = TimeSpan.FromMinutes(30);
             });
