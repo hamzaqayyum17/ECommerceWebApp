@@ -27,11 +27,11 @@
                     <td>@order.UserName</td>
                     <td>Rs. @order.TotalAmount</td>
                     <td>
-                        <span class="badge 
+                        <span class="badge
                             @(order.Status == "Delivered" ? "bg-success" :
-                              order.Status == "Pending"   ? "bg-warning"  :
-                              order.Status == "Shipped"   ? "bg-info"     :
-                                                            "bg-secondary")">
+                                                            order.Status == "Pending" ? "bg-warning" :
+                                                            order.Status == "Shipped" ? "bg-info" :
+                                                                                          "bg-secondary")">
                             @order.Status
                         </span>
                     </td>
@@ -44,29 +44,33 @@
                         <!-- Status Update Form -->
                         <form asp-action="UpdateOrderStatus"
                               method="post" class="d-inline">
-                            <input type="hidden" 
-                                   name="orderId" value="@order.OrderId"/>
-                            <select name="status" 
-                                    class="form-select form-select-sm 
-                                           d-inline w-auto">
+                            <input type="hidden"
+                                   name="orderId" value="@order.OrderId" />
+
+                            <select name="status"
+                                    class="form-select form-select-sm
+                                d-inline w-auto">
+
+                                @* ← selected ki jagah HTML helper use kiya *@
                                 <option value="Pending"
-                                    @(order.Status=="Pending" ?"selected":"")>
+                                        selected="@(order.Status == "Pending")">
                                     Pending
                                 </option>
                                 <option value="Shipped"
-                                    @(order.Status=="Shipped" ?"selected":"")>
+                                        selected="@(order.Status == "Shipped")">
                                     Shipped
                                 </option>
                                 <option value="Delivered"
-                                    @(order.Status=="Delivered"?"selected":"")>
+                                        selected="@(order.Status == "Delivered")">
                                     Delivered
                                 </option>
                                 <option value="Cancelled"
-                                    @(order.Status=="Cancelled"?"selected":"")>
+                                        selected="@(order.Status == "Cancelled")">
                                     Cancelled
                                 </option>
+
                             </select>
-                            <button type="submit" 
+                            <button type="submit"
                                     class="btn btn-sm btn-success">
                                 Update
                             </button>
