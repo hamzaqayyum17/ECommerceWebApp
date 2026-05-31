@@ -1,0 +1,56 @@
+﻿@model List<ECommerceApp.Models.User>
+
+<div class="container-fluid mt-4">
+    <h3>👤 All Users</h3>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+
+    <table class="table table-bordered table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Joined</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in Model)
+            {
+                <tr>
+                    <td>@user.UserId</td>
+                    <td>@user.FullName</td>
+                    <td>@user.Email</td>
+                    <td>
+                        <span class="badge
+                            @(user.Role == "Admin" ? "bg-danger" : "bg-primary")">
+                            @user.Role
+                        </span>
+                    </td>
+                    <td>@user.CreatedAt.ToString("dd MMM yyyy")</td>
+                    <td>
+                        @if (user.Role != "Admin")
+                        {
+                            <a asp-action="DeleteUser"
+                                   asp-route-id="@user.UserId"
+                                   class="btn btn-sm btn-danger"
+                                   onclick="return confirm(
+                                'Delete this user?')">
+                                Delete
+                            </a>
+                        }
+                        else
+                        {
+                            <span class="text-muted small">Protected</span>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

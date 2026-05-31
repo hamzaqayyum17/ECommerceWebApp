@@ -1,0 +1,85 @@
+﻿@model ECommerceApp.Models.Product
+
+<div class="container mt-4">
+    <div class="row">
+
+        <!-- Product Image -->
+        <div class="col-md-5">
+            <img src="@Model.ImageUrl"
+                 class="img-fluid rounded shadow"
+                 style="max-height:400px;
+                        width:100%;
+                        object-fit:cover"/>
+        </div>
+
+        <!-- Product Info -->
+        <div class="col-md-7">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a asp-controller="Home" 
+                           asp-action="Index">Home</a>
+                    </li>
+                    <li class="breadcrumb-item active">
+                        @Model.Name
+                    </li>
+                </ol>
+            </nav>
+
+            <h2>@Model.Name</h2>
+            <p class="text-muted">
+                Category: <strong>@Model.CategoryName</strong>
+            </p>
+            <h3 class="text-success">Rs. @Model.Price</h3>
+            <hr/>
+            <p>@Model.Description</p>
+
+            <!-- Stock Status -->
+            @if (Model.Stock > 0)
+            {
+                <p class="text-success">
+                    ✅ In Stock (@Model.Stock available)
+                </p>
+                <div class="d-flex align-items-center gap-3 mt-3">
+                    <input type="number" id="qtyInput"
+                           value="1" min="1" max="@Model.Stock"
+                           class="form-control" style="width:80px"/>
+                    <button class="btn btn-primary btn-lg add-to-cart"
+                            data-id="@Model.ProductId">
+                        🛒 Add to Cart
+                    </button>
+                </div>
+            }
+            else
+            {
+                <p class="text-danger fw-bold">❌ Out of Stock</p>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    document.querySelector('.add-to-cart')
+            ?.addEventListener('click', function () {
+        const productId = this.dataset.id;
+        const quantity  = document.getElementById('qtyInput').value;
+
+        fetch('/Cart/AddToCart', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ productId, quantity })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('cartBadge')
+                        .textContent = data.cartCount;
+                alert('✅ Added to cart!');
+            } else {
+                alert(data.message);
+            }
+        });
+    });
+</script>
+}

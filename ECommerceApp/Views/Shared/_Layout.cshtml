@@ -53,6 +53,17 @@
                         }
                     </ul>
 
+                    <!-- Live Search Bar -->
+                    <div class="position-relative me-3" style="width:300px">
+                        <input type="text" id="liveSearch"
+                               class="form-control form-control-sm"
+                               placeholder="🔍 Search products..." />
+                        <div id="searchResults"
+                             class="list-group position-absolute w-100 shadow"
+                             style="display:none; z-index:9999; top:100%">
+                        </div>
+                    </div>
+
                     <!-- Right side links -->
                     <ul class="navbar-nav">
 
@@ -60,7 +71,7 @@
                         {
                             @* Logged in user *@
 
-                            @* Cart button — sirf customer ko dikhe *@
+                            @* Cart + My Orders — sirf customer ko dikhe *@
                             @if (Context.Session.GetString("Role") == "Customer")
                             {
                                 <li class="nav-item me-2">
@@ -69,6 +80,13 @@
                                         🛍️ Cart
                                         <span id="cartBadge"
                                               class="badge bg-danger">0</span>
+                                    </a>
+                                </li>
+
+                                <li class="nav-item me-2">
+                                    <a asp-controller="Order" asp-action="MyOrders"
+                                           class="nav-link text-white">
+                                        📋 My Orders
                                     </a>
                                 </li>
                             }
@@ -132,7 +150,6 @@
          Context.Session.GetInt32("UserId") != null)
     {
         <script>
-                // Page load par cart count fetch karo
                 fetch('/Cart/GetCartCount')
                     .then(res => res.json())
                     .then(data => {

@@ -1,5 +1,10 @@
 ﻿@model List<ECommerceApp.Models.CartItem>
-
+@if (TempData["StockError"] != null)
+{
+    <div class="alert alert-danger">
+        ⚠️ Stock issue: @TempData["StockError"]
+    </div>
+}
 <div class="container mt-4">
   <h3>My Cart</h3>
 

@@ -40,5 +40,29 @@ namespace ECommerceApp.Controllers
             if (product == null) return NotFound();
             return View(product);
         }
+        // AJAX live search
+        public IActionResult SearchSuggestions(string keyword)
+        {
+            if (string.IsNullOrEmpty(keyword))
+                return Json(new List<object>());
+
+            var products = _productService.Search(keyword)
+                                          .Take(6)
+                                          .Select(p => new
+                                          {
+                                              p.ProductId,
+                                              p.Name,
+                                              p.Price,
+                                              p.ImageUrl
+                                          });
+            return Json(products);
+        }
+        [Route("Error/{statusCode}")]
+        public IActionResult Error(int statusCode)
+        {
+            if (statusCode == 404)
+                return View("NotFound");
+            return View("Error");
+        }
     }
 }

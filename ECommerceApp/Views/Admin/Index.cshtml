@@ -1,0 +1,104 @@
+﻿@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<div class="container-fluid mt-4">
+    <h3 class="mb-4">⚙️ Admin Dashboard</h3>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white shadow">
+                <div class="card-body">
+                    <h6>Total Products</h6>
+                    <h2>@ViewBag.TotalProducts</h2>
+                    <a asp-action="Products"
+                       class="text-white small">View All →</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white shadow">
+                <div class="card-body">
+                    <h6>Total Orders</h6>
+                    <h2>@ViewBag.TotalOrders</h2>
+                    <a asp-action="Orders"
+                       class="text-white small">View All →</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white shadow">
+                <div class="card-body">
+                    <h6>Categories</h6>
+                    <h2>@ViewBag.TotalCategories</h2>
+                    <a asp-action="Categories"
+                       class="text-white small">View All →</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white shadow">
+                <div class="card-body">
+                    <h6>Total Users</h6>
+                    <h2>@ViewBag.TotalUsers</h2>
+                    <a asp-action="Users"
+                       class="text-white small">View All →</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Orders -->
+    <div class="card shadow">
+        <div class="card-header bg-dark text-white">
+            <h5 class="mb-0">Recent Orders</h5>
+        </div>
+        <div class="card-body">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Order #</th>
+                        <th>Customer</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var order in ViewBag.RecentOrders)
+                    {
+                        <tr>
+                            <td>#@order.OrderId</td>
+                            <td>@order.UserName</td>
+                            <td>Rs. @order.TotalAmount</td>
+                            <td>
+                                <span class="badge
+                                    @(order.Status == "Delivered" ? "bg-success" :
+                                                                            order.Status == "Pending" ? "bg-warning" :
+                                                                            order.Status == "Shipped" ? "bg-info" :
+                                                                                                           "bg-secondary")">
+                                    @order.Status
+                                </span>
+                            </td>
+                            <td>@order.OrderDate.ToString("dd MMM yyyy")</td>
+                            <td>
+                                <a asp-action="OrderDetail"
+                                       asp-route-id="@order.OrderId"
+                                       class="btn btn-sm btn-outline-primary">
+                                    View
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

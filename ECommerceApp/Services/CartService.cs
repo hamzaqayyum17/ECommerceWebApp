@@ -151,5 +151,29 @@ namespace ECommerceApp.Services
             };
             return Convert.ToInt32(_db.ExecuteScalar(query, parameters));
         }
+        // Check karo koi item out of stock toh nahi
+        public List<string> CheckStock(int userId)
+        {
+            string query = @"SELECT p.Name, c.Quantity, p.Stock
+                     FROM Cart c
+                     JOIN Products p ON c.ProductId = p.ProductId
+                     WHERE c.UserId = @UserId
+                     AND c.Quantity > p.Stock";
+
+            var parameters = new SqlParameter[]
+            {
+        new("@UserId", userId)
+            };
+
+            DataTable dt = _db.ExecuteQuery(query, parameters);
+            var outOfStock = new List<string>();
+
+            foreach (DataRow row in dt.Rows)
+            {
+                outOfStock.Add(
+                    $"{row["Name"]} — Only {row["Stock"]} left in stock");
+            }
+            return outOfStock;
+        }
     }
 }

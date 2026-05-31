@@ -29,10 +29,18 @@ namespace ECommerceApp.Controllers
             if (!cartItems.Any())
                 return RedirectToAction("Index", "Cart");
 
+            // Stock check karo
+            var outOfStock = _cartService.CheckStock(userId.Value);
+            if (outOfStock.Any())
+            {
+                TempData["StockError"] = string.Join(", ", outOfStock);
+                return RedirectToAction("Index", "Cart");
+            }
+
             ViewBag.Total = _cartService.GetCartTotal(userId.Value);
             return View(cartItems);
         }
-        
+
         [HttpPost]
         public IActionResult PlaceOrder()
         {
